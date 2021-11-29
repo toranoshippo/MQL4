@@ -1,4 +1,4 @@
-﻿//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
 //|                                      MACD 2 Colour HISTOGRAM.mq4 |
 //|                      Copyright ｩ 2006, MetaQuotes Software Corp. |
 //|                                        http://www.metaquotes.net |
@@ -7,12 +7,12 @@
 #property link      "http://www.metaquotes.net"
 #property link      "2 colour Histogram added by cja" 
  
-#property  indicator_separate_window
-#property  indicator_buffers 4
+#property indicator_separate_window
+#property indicator_buffers 4
 #property indicator_color1 MediumSeaGreen
 #property indicator_color2 Salmon
-#property  indicator_color3  SlateBlue
-#property  indicator_color4  Orange
+#property indicator_color3  SlateBlue
+#property indicator_color4  Orange
 #property indicator_width1 3
 #property indicator_width2 3
 #property indicator_width3 1
