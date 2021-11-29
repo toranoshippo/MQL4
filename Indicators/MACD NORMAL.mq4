@@ -9,10 +9,10 @@
  
 #property  indicator_separate_window
 #property  indicator_buffers 4
-#property indicator_color1 BlueViolet
-#property indicator_color2 SlateBlue
-#property  indicator_color3  Orange
-#property  indicator_color4  Red
+#property indicator_color1 MediumSeaGreen
+#property indicator_color2 Salmon
+#property  indicator_color3  SlateBlue
+#property  indicator_color4  Orange
 #property indicator_width1 3
 #property indicator_width2 3
 #property indicator_width3 1
