@@ -6,20 +6,15 @@
 #property copyright   "Copyright 2021, toranoshippo"
 #property link        ""
 #property version     "1.00"
+#property indicator_chart_window
 #property strict
 
 #property description "RSI値が上限・下限にタッチしたら通知を出す"
-#property description "***** 対応通貨*****"
-#property description "EURUSD"
-#property description "GBPUSD"
-#property description "GBPJPY"
-#property description "GBPAUD"
-#property description "AUDUSD"
-#property description "USDJPY"
-#property description "USDCHF"
-#property description "EURGBP"
-#property description "EURJPY"
-#property description "******************"
+#property description "********** 対応通貨 **********"
+#property description "EURUSD, GBPUSD, GBPJPY"
+#property description "GBPAUD, AUDUSD, USDJPY"
+#property description "USDCHF, EURGBP, EURJPY"
+#property description "*****************************"
 
 
 const string SYMBOL_LIST[] =
@@ -39,7 +34,6 @@ const string SYMBOL_LIST[] =
 double rsiArray[9];// 9 -> SYMBOL_LIST length
 
 int symbolSize;
-
 //+------------------------------------------------------------------+
 //| Parameter selection                                              |
 //+------------------------------------------------------------------+
@@ -60,6 +54,7 @@ int OnInit()
                       iRSI(SYMBOL_LIST[i], TIMEFRAME, 14, PRICE_CLOSE, 0)
                       , 2);
      }
+
    EventSetTimer(5);// OnTimerを５秒間隔に呼び出す
    return(INIT_SUCCEEDED);
   }
@@ -86,8 +81,6 @@ int OnCalculate(
 //+------------------------------------------------------------------+
 void OnTimer()
   {
-    // 動作確認用
-    // printf("--------");
     rsiSign();
   }
 //+------------------------------------------------------------------+
@@ -104,42 +97,54 @@ void rsiSign()
                          , 2);
       rsiArray[i] = rsiNow;
 
-      seekDirection(rsiPrev, rsiNow, SYMBOL_LIST[i]);
+      string pushMessage = getPushMessage(SYMBOL_LIST[i], rsiPrev, rsiNow);
+     
+      // TODO : 5分以内に通知があればスルー
+      if(pushMessage != "") SendNotification(pushMessage);
     }
   }
 //+------------------------------------------------------------------+
 //| 上下どちらからRSIラインにタッチしたか確認                                  |
 //+------------------------------------------------------------------+
-void seekDirection(
-    double rsiPrev
-  , double rsiNow
-  , string symbol
+string getPushMessage(
+    const string symbol
+  , const double rsiPrev
+  , const double rsiNow
 )
   {
-   // 動作確認用
-   // printf(symbol+ " : " + TIMEFRAME + "本足" + rsiPrev + " -> : " + rsiNow);//////////////////
-
+   string pushMessage = "";
    if(rsiPrev != 0 && rsiPrev != rsiNow)
     {
       if(rsiPrev < RSI_TOP_LINE && rsiNow >= RSI_TOP_LINE)
        {
-         // TODO: push通知
-         printf(symbol + "下から70にタッチ：上げ");
+         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "下", RSI_TOP_LINE, "上げ");
        }
       else if(rsiPrev >= RSI_TOP_LINE && rsiNow <= RSI_TOP_LINE)
        {
-         // TODO: push通知
-         printf(symbol + "上から70にタッチ：下げ");
+         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "上", RSI_TOP_LINE, "下げ");
        }
       else if(rsiPrev >= RSI_BOTTOM_LINE && rsiNow <= RSI_BOTTOM_LINE)
        {
-         // TODO: push通知
-         printf(symbol + "上から30にタッチ：下げ");
+         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "上", RSI_BOTTOM_LINE, "下げ");
        }
       else if(rsiPrev < RSI_BOTTOM_LINE && rsiNow >= RSI_BOTTOM_LINE)
        {
-         // TODO: push通知
-         printf(symbol + "下から30にタッチ：上げ");
+         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "下", RSI_BOTTOM_LINE, "上げ");
        }
     }
+    return pushMessage;
   }
+//+------------------------------------------------------------------+
+//| Example: EURUSD : 15本足29.29->31下から30にタッチ：上げ                |
+//+------------------------------------------------------------------+
+string _getPushMessage(
+    const string symbol
+  , const double rsiPrev
+  , const double rsiNow
+  , const string direction
+  , const int    line
+  , const string status
+)
+ {
+   return symbol + " : " + TIMEFRAME + "本足" + rsiPrev + "->" + rsiNow +  direction + "から" + line + "を交差：" + status;
+ }
