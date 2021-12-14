@@ -16,18 +16,17 @@
 #property description "USDCHF, EURGBP, EURJPY"
 #property description "*****************************"
 
-
 const string SYMBOL_LIST[] =
   {
      "EURUSD"
+   , "EURGBP"
+   , "EURJPY"
    , "GBPUSD"
    , "GBPJPY"
    , "GBPAUD"
    , "AUDUSD"
    , "USDJPY"
    , "USDCHF"
-   , "EURGBP"
-   , "EURJPY"
   };
   
 // TODO: onInitで配列数を宣言することができなかったので他を探す
@@ -55,7 +54,7 @@ int OnInit()
                       , 2);
      }
 
-   EventSetTimer(5);// OnTimerを５秒間隔に呼び出す
+   // EventSetTimer(5);// OnTimerを５秒間隔に呼び出す
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -74,6 +73,7 @@ int OnCalculate(
    , const int      &spread[]
 )
   {
+   rsiSign();
    return(rates_total);
   }
 //+------------------------------------------------------------------+
@@ -81,7 +81,6 @@ int OnCalculate(
 //+------------------------------------------------------------------+
 void OnTimer()
   {
-    rsiSign();
   }
 //+------------------------------------------------------------------+
 //| RSI値が上限・下限にタッチしたらサインを出す                               |
@@ -100,7 +99,12 @@ void rsiSign()
       string pushMessage = getPushMessage(SYMBOL_LIST[i], rsiPrev, rsiNow);
      
       // TODO : 5分以内に通知があればスルー
-      if(pushMessage != "") SendNotification(pushMessage);
+      if(pushMessage != "")
+       {
+         SendNotification(pushMessage);
+         // Alert("\n" + pushMessage);
+         printf("***********" + pushMessage + "***********");
+       }
     }
   }
 //+------------------------------------------------------------------+
@@ -117,19 +121,19 @@ string getPushMessage(
     {
       if(rsiPrev < RSI_TOP_LINE && rsiNow >= RSI_TOP_LINE)
        {
-         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "下", RSI_TOP_LINE, "上げ");
+         pushMessage = createPushMessage(symbol, rsiPrev, rsiNow, "下", RSI_TOP_LINE, "上げ");
        }
       else if(rsiPrev >= RSI_TOP_LINE && rsiNow <= RSI_TOP_LINE)
        {
-         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "上", RSI_TOP_LINE, "下げ");
+         pushMessage = createPushMessage(symbol, rsiPrev, rsiNow, "上", RSI_TOP_LINE, "下げ");
        }
       else if(rsiPrev >= RSI_BOTTOM_LINE && rsiNow <= RSI_BOTTOM_LINE)
        {
-         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "上", RSI_BOTTOM_LINE, "下げ");
+         pushMessage = createPushMessage(symbol, rsiPrev, rsiNow, "上", RSI_BOTTOM_LINE, "下げ");
        }
       else if(rsiPrev < RSI_BOTTOM_LINE && rsiNow >= RSI_BOTTOM_LINE)
        {
-         pushMessage = _getPushMessage(symbol, rsiPrev, rsiNow, "下", RSI_BOTTOM_LINE, "上げ");
+         pushMessage = createPushMessage(symbol, rsiPrev, rsiNow, "下", RSI_BOTTOM_LINE, "上げ");
        }
     }
     return pushMessage;
@@ -137,7 +141,7 @@ string getPushMessage(
 //+------------------------------------------------------------------+
 //| Example: EURUSD : 15本足29.29->31下から30にタッチ：上げ                |
 //+------------------------------------------------------------------+
-string _getPushMessage(
+string createPushMessage(
     const string symbol
   , const double rsiPrev
   , const double rsiNow
