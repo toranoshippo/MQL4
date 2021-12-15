@@ -34,7 +34,7 @@ const string _SYMBOL_LIST[] =
   };
 
 // TODO: onInitで配列数を宣言することができなかったので他を探す
-double rsiArray[2][9];//[_BAR_LIST.length][_SYMBOL_LIST.length]
+double _rsiArray[2][9];//[_BAR_LIST.length][_SYMBOL_LIST.length]
 int _symbolSize, _barSize;;
 //+------------------------------------------------------------------+
 //| Parameter selection                                              |
@@ -53,7 +53,7 @@ int OnInit()
     {
      for(int j = 0; j < _symbolSize; j++)
        {
-        rsiArray[i][j] = NormalizeDouble(iRSI(_SYMBOL_LIST[j], _BAR_LIST[i], 14, PRICE_CLOSE, 0), 2);
+        _rsiArray[i][j] = NormalizeDouble(iRSI(_SYMBOL_LIST[j], _BAR_LIST[i], 14, PRICE_CLOSE, 0), 2);
        }
     }
 
@@ -91,9 +91,9 @@ void rsiSign()
      {
       for(int j = 0; j < _symbolSize; j++)
         {
-         double rsiPrev = rsiArray[i][j];
+         double rsiPrev = _rsiArray[i][j];
          double rsiNow  = NormalizeDouble(iRSI(_SYMBOL_LIST[j], _BAR_LIST[i], 14, PRICE_CLOSE, 0), 2);
-         rsiArray[i][j] = rsiNow;
+         _rsiArray[i][j] = rsiNow;
 
          string pushMessage = getPushMessage(_SYMBOL_LIST[j], _BAR_LIST[i], rsiPrev, rsiNow);
 
