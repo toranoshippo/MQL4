@@ -60,6 +60,48 @@ int OnInit()
    EventSetTimer(5);// OnTimerを５秒間隔に呼び出す
    return(INIT_SUCCEEDED);
   }
+void OnDeinit(const int reason)
+  {
+   string err;
+   switch(reason)
+     {
+      case REASON_PROGRAM:
+         err = "ExpertRemove()関数を実行して稼働中のEAが削除された。";
+         break;
+      case REASON_REMOVE:
+         err = "チャートから稼働中のEAが削除された。";
+         break;
+      case REASON_RECOMPILE:
+         err = "EA稼働中にリコンパイル（再コンパイル）された。";
+         break;
+      case REASON_CHARTCHANGE:
+         err = "EA稼働中にタイムフレーム（時間足）が変更された。";
+         break;
+      case REASON_CHARTCLOSE:
+         err = "EA稼働中にチャートが閉じられた。";
+         break;
+      case REASON_PARAMETERS:
+         err = "EA稼働中にパラメーターが変更された。";
+         break;
+      case REASON_ACCOUNT:
+         err = "EA稼働中にサーバーへの再接続が発生した。";
+         break;
+      case REASON_TEMPLATE:
+         err = "EA稼働中に新しいテンプレートが適用された。";
+         break;
+      case REASON_INITFAILED:
+         err = "EAの初期化に失敗した。（OnInitの戻り値が0以外）";
+         break;
+      case REASON_CLOSE:
+         err = "MT4のターミナルが閉じられた。";
+         break;
+      default:
+         err = "else";
+         break;
+     }
+   printf(__FUNCTION__ + " : " + err);
+   SendNotification(__FUNCTION__ + " : " + err);
+  }
 //+------------------------------------------------------------------+
 //| Custom indicator iteration function                              |
 //+------------------------------------------------------------------+
